@@ -32,13 +32,17 @@ then
   env|grep RD_CONFIG|sort >&2
   exit 1
 fi
-echo "$RD_CONFIG_BASTION_SSH_KEY_STORAGE_PATH" > "$SSH_BASTION_KEY_FILE"
+# Convert literal \n sequences to actual newlines and remove carriage returns
+echo "$RD_CONFIG_BASTION_SSH_KEY_STORAGE_PATH" | sed 's/\\n/\n/g' | tr -d '\r' > "$SSH_BASTION_KEY_FILE"
+chmod 600 "$SSH_BASTION_KEY_FILE"
+
 BASTION_IDENTITY_FILE="$SSH_BASTION_KEY_FILE"
 
 
 if [[ -n "${RD_CONFIG_SSH_KEY_STORAGE_PATH:-}" ]]
 then
-    echo "$RD_CONFIG_SSH_KEY_STORAGE_PATH" > "$SSH_NODE_KEY_FILE"
+    echo "$RD_CONFIG_SSH_KEY_STORAGE_PATH" | sed 's/\\n/\n/g' | tr -d '\r' > "$SSH_NODE_KEY_FILE"
+    chmod 600 "$SSH_NODE_KEY_FILE"
     NODE_IDENTITY_FILE="$SSH_NODE_KEY_FILE"
 fi
 
